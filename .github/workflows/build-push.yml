@@ -112,9 +112,39 @@ jobs:
           set -euo pipefail
 
           key_file="$RUNNER_TEMP/cosign.key"
-          trap 'rm -f "$key_file"' EXIT
-          printf '%s' "$COSIGN_PRIVATE_KEY" > "$key_file"
+          generated_pub="$RUNNER_TEMP/cosign.pub.generated"
+          expected_pub="$RUNNER_TEMP/cosign.pub.expected"
+          trap 'rm -f "$key_file" "$generated_pub" "$expected_pub"' EXIT
+
+          if [ -z "${COSIGN_PRIVATE_KEY:-}" ]; then
+            echo "::error::COSIGN_PRIVATE_KEY is empty"
+            exit 1
+          fi
+
+          if [ -z "${COSIGN_PASSWORD:-}" ]; then
+            echo "::error::COSIGN_PASSWORD is empty"
+            exit 1
+          fi
+
+          if printf '%s' "$COSIGN_PRIVATE_KEY" | grep -q 'BEGIN .*PRIVATE KEY'; then
+            printf '%s' "$COSIGN_PRIVATE_KEY" > "$key_file"
+          elif printf '%b' "$COSIGN_PRIVATE_KEY" | grep -q 'BEGIN .*PRIVATE KEY'; then
+            printf '%b' "$COSIGN_PRIVATE_KEY" > "$key_file"
+          else
+            if ! printf '%s' "$COSIGN_PRIVATE_KEY" | base64 -d > "$key_file"; then
+              echo "::error::COSIGN_PRIVATE_KEY must be a PEM, escaped PEM, or base64-encoded PEM"
+              exit 1
+            fi
+          fi
+
           chmod 600 "$key_file"
+          cosign public-key --key "$key_file" > "$generated_pub"
+          tr -d '\r' < signing/cosign.pub > "$expected_pub"
+
+          if ! cmp -s "$expected_pub" "$generated_pub"; then
+            echo "::error::COSIGN_PRIVATE_KEY does not match signing/cosign.pub"
+            exit 1
+          fi
 
           cosign sign --yes --key "$key_file" "$IMAGE_DIGEST"
 
