@@ -1,0 +1,34 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8smaxreplicas
+  annotations:
+    metadata.gatekeeper.sh/title: "Max Deployment Replicas"
+    metadata.gatekeeper.sh/version: 1.0.0
+    description: >-
+      Rejects Deployments when spec.replicas is greater than the configured
+      maxReplicas value. Deployments without spec.replicas are allowed.
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sMaxReplicas
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            maxReplicas:
+              type: integer
+              minimum: 1
+  targets:
+  - target: admission.k8s.gatekeeper.sh
+    rego: |
+      package k8smaxreplicas
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Deployment"
+        replicas := input.review.object.spec.replicas
+        max := input.parameters.maxReplicas
+        replicas > max
+        msg := sprintf("Deployment <%v> has <%v> replicas, which exceeds maxReplicas <%v>", [input.review.object.metadata.name, replicas, max])
+      }
