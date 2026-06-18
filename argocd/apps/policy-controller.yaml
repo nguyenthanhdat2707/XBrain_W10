@@ -1,0 +1,75 @@
+# ArgoCD App: Deploy Sigstore Policy Controller
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: policy-controller
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+spec:
+  project: default
+  source:
+    repoURL: https://sigstore.github.io/helm-charts
+    chart: policy-controller
+    targetRevision: 0.10.6
+    helm:
+      releaseName: policy-controller
+      values: |
+        installCRDs: true
+        webhook:
+          configData:
+            no-match-policy: deny
+          namespaceSelector:
+            matchExpressions:
+            - key: policy.sigstore.dev/include
+              operator: In
+              values: ["true"]
+            - key: kubernetes.io/metadata.name
+              operator: NotIn
+              values:
+              - kube-system
+              - argocd
+              - gatekeeper-system
+              - external-secrets
+              - cosign-system
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 512Mi
+          podSecurityContext:
+            enabled: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+              - ALL
+        leasescleanup:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          podSecurityContext:
+            enabled: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+              - ALL
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cosign-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true

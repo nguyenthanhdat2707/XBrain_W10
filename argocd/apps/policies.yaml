@@ -1,0 +1,30 @@
+# ArgoCD App: Deploy Sigstore signature policies
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: policies
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/nguyenthanhdat2707/XBrain_W10.git
+    path: policies
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cosign-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+    syncOptions:
+    - ServerSideApply=true
+    - SkipDryRunOnMissingResource=true

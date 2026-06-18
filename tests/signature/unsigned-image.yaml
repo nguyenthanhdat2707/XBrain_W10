@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signature-unsigned
+  namespace: demo
+  labels:
+    app: signature-unsigned
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: signature-unsigned
+  template:
+    metadata:
+      labels:
+        app: signature-unsigned
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+      containers:
+      - name: api
+        image: ghcr.io/nguyenthanhdat2707/w10-api:0.0.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
