@@ -25,14 +25,14 @@ spec:
         runAsGroup: 10001
       containers:
       - name: api
-        image: ghcr.io/nguyenthanhdat2707/w10-api:0.0.1
+        image: ghcr.io/nguyenthanhdat2707/w10-api:0.0.2
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
           protocol: TCP
         env:
         - name: VERSION
-          value: "v0.0.1"
+          value: "v0.0.2"
         - name: ERROR_RATE
           value: "0"
         livenessProbe:
