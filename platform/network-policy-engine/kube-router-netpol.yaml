@@ -81,7 +81,7 @@ spec:
         - --run-service-proxy=false
         - --run-loadbalancer=false
         - --metrics-path=/metrics
-        - --metrics-port=20244
+        - --metrics-port=20246
         securityContext:
           privileged: true
         resources:
