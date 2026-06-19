@@ -1,0 +1,17 @@
+# Payments ResourceQuota and LimitRange evidence
+
+Commands:
+
+kubectl get resourcequota payments-quota -n payments
+kubectl describe resourcequota payments-quota -n payments
+kubectl get limitrange payments-container-defaults -n payments
+kubectl describe limitrange payments-container-defaults -n payments
+kubectl apply --dry-run=server -f tests/payments/invalid-quota-pod.yaml
+kubectl apply --dry-run=server -o yaml -f tests/payments/invalid-no-limits.yaml | sed -n '/resources:/,/terminationMessagePath:/p'
+
+Expected output:
+
+- ResourceQuota exists and shows hard limits for pods, requests.cpu, requests.memory, limits.cpu, and limits.memory.
+- LimitRange exists and shows default requests/limits for containers.
+- invalid-quota-pod is rejected by ResourceQuota because the pod exceeds payments quota.
+- invalid-no-limits is defaulted by LimitRange with cpu/memory requests and limits before validating admission.

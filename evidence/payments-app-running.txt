@@ -1,0 +1,19 @@
+# Payments app running evidence
+
+Commands:
+
+kubectl get deploy,svc,pods -n payments
+kubectl get deploy payments-api -n payments -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
+kubectl get ns payments --show-labels
+kubectl exec -n payments deploy/payments-api -- python - <<'PY'
+import urllib.request
+print(urllib.request.urlopen("http://payments-api.payments.svc/healthz", timeout=5).read().decode())
+PY
+
+Expected output:
+
+- deployment/payments-api is available with 2 desired/ready replicas.
+- service/payments-api is ClusterIP.
+- image is ghcr.io/nguyenthanhdat2707/w10-api:0.0.2.
+- namespace payments has policy.sigstore.dev/include=true.
+- healthz returns ok.

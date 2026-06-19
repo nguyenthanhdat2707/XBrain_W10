@@ -1,0 +1,17 @@
+# Argo CD health evidence
+
+Commands:
+
+kubectl get applications -n argocd
+kubectl get application payments -n argocd
+kubectl get application payments-app -n argocd
+kubectl get application policy-controller -n argocd
+kubectl get application policies -n argocd
+
+Expected output:
+
+- payments is Synced and Healthy.
+- payments-app is Synced and Healthy.
+- policy-controller is Synced and Healthy.
+- policies is Synced and Healthy.
+- Existing apps remain healthy; no previous platform phase is disabled or weakened.

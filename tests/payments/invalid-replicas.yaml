@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-invalid-replicas
+  namespace: payments
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: payments-invalid-replicas
+  template:
+    metadata:
+      labels:
+        app: payments-invalid-replicas
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+      containers:
+      - name: api
+        image: ghcr.io/nguyenthanhdat2707/w10-api:0.0.2
+        command: ["sh", "-c", "sleep 3600"]
+        resources:
+          limits:
+            cpu: 100m
+            memory: 64Mi

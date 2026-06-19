@@ -1,0 +1,19 @@
+# Payments admission policy reject evidence
+
+Commands:
+
+kubectl apply --dry-run=server -f tests/payments/invalid-latest.yaml
+kubectl apply --dry-run=server -f tests/payments/invalid-root-user.yaml
+kubectl apply --dry-run=server -f tests/payments/invalid-hostnetwork.yaml
+kubectl apply --dry-run=server -f tests/payments/invalid-replicas.yaml
+kubectl apply --dry-run=server -f tests/payments/invalid-unsigned-image.yaml
+kubectl apply --dry-run=server -o yaml -f tests/payments/invalid-no-limits.yaml | sed -n '/resources:/,/terminationMessagePath:/p'
+
+Expected output:
+
+- invalid-latest is rejected by Gatekeeper disallow-latest-tag.
+- invalid-root-user is rejected by Gatekeeper disallow-root-user.
+- invalid-hostnetwork is rejected by Gatekeeper disallow-host-network.
+- invalid-replicas is rejected by Gatekeeper deployment-max-replicas.
+- invalid-unsigned-image is rejected by Sigstore Policy Controller because no valid signature exists.
+- invalid-no-limits is defaulted by LimitRange, so the admitted pod has requests/limits before Gatekeeper validation.

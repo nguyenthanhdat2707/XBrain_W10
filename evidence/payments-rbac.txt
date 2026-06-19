@@ -1,0 +1,17 @@
+# Payments RBAC evidence
+
+Commands:
+
+kubectl auth can-i create deployments.apps --as=payments-dev -n payments
+kubectl auth can-i create deployments.apps --as=payments-dev -n demo
+kubectl auth can-i get secrets --as=payments-dev -n payments
+kubectl auth can-i update rolebindings.rbac.authorization.k8s.io --as=payments-dev -n payments
+kubectl auth can-i create clusterrolebindings.rbac.authorization.k8s.io --as=payments-dev
+
+Expected output:
+
+yes
+no
+no
+no
+no
