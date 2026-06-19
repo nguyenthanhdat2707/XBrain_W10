@@ -14,6 +14,6 @@ Expected output:
 
 - deployment/payments-api is available with 2 desired/ready replicas.
 - service/payments-api is ClusterIP.
-- image is ghcr.io/nguyenthanhdat2707/w10-api:0.0.2.
+- image is ghcr.io/nguyenthanhdat2707/w10-api:0.0.2@sha256:ba92522c5d62e9ddabdddd63b0e3e49af99ce30fd8e4eb42e63a61eb1762aab9.
 - namespace payments has policy.sigstore.dev/include=true.
 - healthz returns ok.
