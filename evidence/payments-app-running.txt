@@ -5,7 +5,7 @@ Commands:
 kubectl get deploy,svc,pods -n payments
 kubectl get deploy payments-api -n payments -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
 kubectl get ns payments --show-labels
-kubectl exec -n payments deploy/payments-api -- python - <<'PY'
+kubectl exec -i -n payments deploy/payments-api -- python - <<'PY'
 import urllib.request
 print(urllib.request.urlopen("http://payments-api.payments.svc/healthz", timeout=5).read().decode())
 PY

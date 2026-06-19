@@ -11,7 +11,7 @@ kubectl apply --dry-run=server -o yaml -f tests/payments/invalid-no-limits.yaml 
 
 Expected output:
 
-- invalid-latest is rejected by Gatekeeper disallow-latest-tag.
+- invalid-latest is rejected by admission. In the current cluster Sigstore rejects it first because the old latest tag is unsigned; Gatekeeper still disallows latest tags for pods.
 - invalid-root-user is rejected by Gatekeeper disallow-root-user.
 - invalid-hostnetwork is rejected by Gatekeeper disallow-host-network.
 - invalid-replicas is rejected by Gatekeeper deployment-max-replicas.

@@ -1,0 +1,23 @@
+# ArgoCD App: Deploy NetworkPolicy enforcement for minikube
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: network-policy-engine
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/nguyenthanhdat2707/XBrain_W10.git
+    path: platform/network-policy-engine
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - ServerSideApply=true

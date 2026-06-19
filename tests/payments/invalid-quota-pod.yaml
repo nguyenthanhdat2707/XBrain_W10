@@ -9,13 +9,33 @@ spec:
     runAsUser: 10001
     runAsGroup: 10001
   containers:
-  - name: api
+  - name: api-a
     image: ghcr.io/nguyenthanhdat2707/w10-api:0.0.2
     command: ["sh", "-c", "sleep 3600"]
     resources:
       requests:
-        cpu: "2"
-        memory: 2Gi
+        cpu: 500m
+        memory: 256Mi
       limits:
-        cpu: "2"
-        memory: 2Gi
+        cpu: 500m
+        memory: 256Mi
+  - name: api-b
+    image: ghcr.io/nguyenthanhdat2707/w10-api:0.0.2
+    command: ["sh", "-c", "sleep 3600"]
+    resources:
+      requests:
+        cpu: 500m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+  - name: api-c
+    image: ghcr.io/nguyenthanhdat2707/w10-api:0.0.2
+    command: ["sh", "-c", "sleep 3600"]
+    resources:
+      requests:
+        cpu: 500m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi

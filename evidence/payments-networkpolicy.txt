@@ -3,15 +3,15 @@
 Commands:
 
 kubectl get networkpolicy -n payments
-kubectl exec -n payments deploy/payments-api -- python - <<'PY'
+kubectl exec -i -n payments deploy/payments-api -- python - <<'PY'
 import urllib.request
 print(urllib.request.urlopen("http://payments-api.payments.svc/healthz", timeout=5).read().decode())
 PY
-kubectl exec -n payments deploy/payments-api -- python - <<'PY'
+kubectl exec -i -n payments deploy/payments-api -- python - <<'PY'
 import socket
 print(socket.gethostbyname("payments-api.payments.svc"))
 PY
-kubectl exec -n payments deploy/payments-api -- python - <<'PY'
+kubectl exec -i -n payments deploy/payments-api -- python - <<'PY'
 import urllib.request
 urllib.request.urlopen("http://api.demo.svc/healthz", timeout=5)
 PY
@@ -19,6 +19,7 @@ PY
 Expected output:
 
 - NetworkPolicies payments-default-deny, payments-allow-same-namespace, and payments-allow-dns exist.
+- network-policy-engine is Synced/Healthy and kube-router-netpol is Running in kube-system.
 - payments-api can call payments-api.payments.svc.
 - DNS lookup for payments-api.payments.svc succeeds.
 - HTTP call to api.demo.svc times out or is blocked.
